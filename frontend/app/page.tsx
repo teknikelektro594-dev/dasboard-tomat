@@ -34,7 +34,7 @@ const warnaBadge = (warna: string) => {
     case "hijau":
       return "bg-green-100 text-green-700";
     default:
-      return "bg-gray-100 text-gray-700";
+      return "bg-gray-200 text-gray-800";
   }
 };
 
@@ -47,7 +47,7 @@ const kategoriBadge = (kategori: string) => {
     case "besar":
       return "bg-green-100 text-green-700";
     default:
-      return "bg-gray-100 text-gray-700";
+      return "bg-gray-200 text-gray-800";
   }
 };
 
@@ -57,24 +57,23 @@ export default function Home() {
   const [online, setOnline] = useState(false);
   const [riwayat, setRiwayat] = useState<RiwayatData[]>([]);
 
-  /* ================== DUMMY REALTIME ================== */
+  /* ================== DUMMY DATA REALTIME ================== */
   useEffect(() => {
     const interval = setInterval(() => {
-      const warnaList = ["Merah", "Kuning", "Hijau"];
-      const kategoriList = ["Kecil", "Sedang", "Besar"];
-
       const dummy: TomatData = {
         status: "ONLINE",
-        warna: warnaList[Math.floor(Math.random() * warnaList.length)],
-        berat: Math.floor(80 + Math.random() * 120),
-        kategori:
-          kategoriList[Math.floor(Math.random() * kategoriList.length)],
-        waktu: new Date().toISOString(),
+        warna: ["Merah", "Kuning", "Hijau"][
+          Math.floor(Math.random() * 3)
+        ],
+        berat: Math.floor(Math.random() * 80) + 120,
+        kategori: ["Kecil", "Sedang", "Besar"][
+          Math.floor(Math.random() * 3)
+        ],
+        waktu: new Date().toLocaleTimeString(),
       };
 
       setData(dummy);
       setOnline(true);
-
       setRiwayat((prev) =>
         [{ id: Date.now(), ...dummy }, ...prev].slice(0, 10)
       );
@@ -84,27 +83,28 @@ export default function Home() {
   }, []);
 
   if (!data) {
-    return <p className="p-6">Loading data...</p>;
+    return <p className="p-6 text-gray-900">Loading data...</p>;
   }
 
+  /* ================== DATA GRAFIK ================== */
   const grafikData = riwayat
     .slice()
     .reverse()
     .map((item) => ({
-      waktu: new Date(item.waktu).toLocaleTimeString(),
+      waktu: item.waktu,
       berat: item.berat,
     }));
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className="min-h-screen bg-gray-100 p-6 text-gray-900">
       <div className="max-w-7xl mx-auto space-y-8">
 
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-bold text-gray-800">
+          <h1 className="text-3xl font-bold text-gray-900">
             Dashboard Monitoring Tomat
           </h1>
-          <p className="text-gray-500">
+          <p className="text-gray-700 md:text-gray-600">
             Sistem sortir tomat berbasis Arduino UNO dan ESP32 Dev Module
           </p>
         </div>
@@ -112,7 +112,7 @@ export default function Home() {
         {/* Card Ringkas */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-white p-6 rounded-2xl shadow-sm border">
-            <p className="text-sm text-gray-500 mb-2">Status Sistem</p>
+            <p className="text-sm text-gray-700 mb-2">Status Sistem</p>
             <span
               className={`px-4 py-1 rounded-full text-sm font-semibold ${
                 online
@@ -125,7 +125,7 @@ export default function Home() {
           </div>
 
           <div className="bg-white p-6 rounded-2xl shadow-sm border">
-            <p className="text-sm text-gray-500 mb-2">Warna Tomat</p>
+            <p className="text-sm text-gray-700 mb-2">Warna Tomat</p>
             <span
               className={`px-4 py-1 rounded-full text-sm font-semibold ${warnaBadge(
                 data.warna
@@ -136,7 +136,7 @@ export default function Home() {
           </div>
 
           <div className="bg-white p-6 rounded-2xl shadow-sm border">
-            <p className="text-sm text-gray-500 mb-2">Berat Tomat</p>
+            <p className="text-sm text-gray-700 mb-2">Berat Tomat</p>
             <p className="text-lg font-semibold">{data.berat} gram</p>
           </div>
         </div>
@@ -149,17 +149,17 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <p className="text-sm text-gray-500">Warna</p>
+              <p className="text-sm text-gray-700">Warna</p>
               <p className="font-semibold">{data.warna}</p>
             </div>
 
             <div>
-              <p className="text-sm text-gray-500">Berat</p>
+              <p className="text-sm text-gray-700">Berat</p>
               <p className="font-semibold">{data.berat} gram</p>
             </div>
 
             <div>
-              <p className="text-sm text-gray-500">Kategori</p>
+              <p className="text-sm text-gray-700">Kategori</p>
               <span
                 className={`px-4 py-1 rounded-full text-sm font-semibold ${kategoriBadge(
                   data.kategori
@@ -169,6 +169,40 @@ export default function Home() {
               </span>
             </div>
           </div>
+        </div>
+
+        {/* TABEL HASIL KLASIFIKASI FUZZY */}
+        <div className="bg-white p-6 rounded-2xl shadow-sm border">
+          <h2 className="text-lg font-semibold mb-4">
+            Tabel Hasil Klasifikasi Fuzzy
+          </h2>
+
+          <table className="w-full text-sm border">
+            <thead className="bg-gray-100 border-b">
+              <tr>
+                <th className="p-2 text-left">Warna</th>
+                <th className="p-2 text-left">Berat (g)</th>
+                <th className="p-2 text-left">Kategori</th>
+                <th className="p-2 text-left">Waktu</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="border-b">
+                <td className="p-2">{data.warna}</td>
+                <td className="p-2">{data.berat}</td>
+                <td className="p-2">
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-semibold ${kategoriBadge(
+                      data.kategori
+                    )}`}
+                  >
+                    {data.kategori}
+                  </span>
+                </td>
+                <td className="p-2 text-gray-700">{data.waktu}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
         {/* Grafik */}
@@ -193,38 +227,6 @@ export default function Home() {
               </LineChart>
             </ResponsiveContainer>
           </div>
-        </div>
-
-        {/* Riwayat */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border">
-          <h2 className="text-lg font-semibold mb-4">
-            Riwayat Sortir Tomat
-          </h2>
-
-          <table className="w-full text-sm text-left border">
-            <thead className="bg-gray-50 border-b">
-              <tr>
-                <th className="p-2">No</th>
-                <th className="p-2">Warna</th>
-                <th className="p-2">Berat (g)</th>
-                <th className="p-2">Kategori</th>
-                <th className="p-2">Waktu</th>
-              </tr>
-            </thead>
-            <tbody>
-              {riwayat.map((item, i) => (
-                <tr key={item.id} className="border-b">
-                  <td className="p-2">{i + 1}</td>
-                  <td className="p-2">{item.warna}</td>
-                  <td className="p-2">{item.berat}</td>
-                  <td className="p-2">{item.kategori}</td>
-                  <td className="p-2 text-gray-500">
-                    {new Date(item.waktu).toLocaleTimeString()}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
         </div>
 
       </div>
