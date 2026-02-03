@@ -228,51 +228,57 @@ export default function Home() {
             </ResponsiveContainer>
           </div>
         </div>
+
 {/* RIWAYAT SORTIR TOMAT */}
 <div className="bg-white p-6 rounded-2xl shadow-sm border">
-  <h2 className="text-lg font-semibold mb-4 text-black">
+  <h2 className="text-lg font-semibold mb-4 text-gray-900">
     Riwayat Sortir Tomat
   </h2>
 
-  <table className="w-full text-sm border">
-    <thead className="bg-gray-100 border-b">
-      <tr>
-        <th className="p-2 text-left text-black">No</th>
-        <th className="p-2 text-left text-black">Warna</th>
-        <th className="p-2 text-left text-black">Berat (g)</th>
-        <th className="p-2 text-left text-black">Kategori</th>
-        <th className="p-2 text-left text-black">Waktu</th>
-      </tr>
-    </thead>
-    <tbody>
-      {riwayat.map((item, index) => (
-        <tr key={item.id} className="border-b">
-          <td className="p-2">{index + 1}</td>
-          <td className="p-2">
-            <span
-              className={`px-3 py-1 rounded-full text-xs font-semibold ${warnaBadge(
-                item.warna
-              )}`}
-            >
-              {item.warna}
-            </span>
-          </td>
-          <td className="p-2">{item.berat}</td>
-          <td className="p-2">
-            <span
-              className={`px-3 py-1 rounded-full text-xs font-semibold ${kategoriBadge(
-                item.kategori
-              )}`}
-            >
-              {item.kategori}
-            </span>
-          </td>
-          <td className="p-2 text-gray-700">{item.waktu}</td>
+  {riwayat.length === 0 ? (
+    <p className="text-gray-500">Belum ada data sortir</p>
+  ) : (
+    <table className="w-full text-sm border text-gray-900">
+      <thead className="bg-gray-100 border-b">
+        <tr>
+          <th className="p-2 text-left">No</th>
+          <th className="p-2 text-left">Warna</th>
+          <th className="p-2 text-left">Berat (g)</th>
+          <th className="p-2 text-left">Kategori</th>
+          <th className="p-2 text-left">Waktu</th>
         </tr>
-      ))}
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        {riwayat.map((item, index) => (
+          <tr key={item.id} className="border-b">
+            <td className="p-2">{index + 1}</td>
+            <td className="p-2">
+              <span
+                className={`px-3 py-1 rounded-full text-xs font-semibold ${warnaBadge(
+                  item.warna
+                )}`}
+              >
+                {item.warna}
+              </span>
+            </td>
+            <td className="p-2">{item.berat}</td>
+            <td className="p-2">
+              <span
+                className={`px-3 py-1 rounded-full text-xs font-semibold ${kategoriBadge(
+                  item.kategori
+                )}`}
+              >
+                {item.kategori}
+              </span>
+            </td>
+            <td className="p-2 text-gray-700">{item.waktu}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )}
 </div>
+
 
       </div>
     </div>
