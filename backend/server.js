@@ -11,21 +11,30 @@ let dataTomat = {
   warna: "Merah",
   berat: 145,
   kategori: "Besar",
-  waktu: new Date().toLocaleTimeString()
+  waktu: new Date().toLocaleTimeString(),
 };
 
+// cek server
+app.get("/", (req, res) => {
+  res.send("Backend Tomat Aktif 🚀");
+});
+
+// GET data dari ESP32
 app.get("/api/esp32", (req, res) => {
   res.json(dataTomat);
 });
 
+// POST data dari ESP32
 app.post("/api/esp32", (req, res) => {
   dataTomat = {
     ...req.body,
-    waktu: new Date().toLocaleTimeString()
+    waktu: new Date().toLocaleTimeString(),
   };
   res.json({ message: "Data diterima" });
 });
 
-app.listen(3001, () => {
-  console.log("Backend jalan di http://localhost:3001");
+// PORT dinamis untuk hosting
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+  console.log(`Backend jalan di port ${PORT}`);
 });
