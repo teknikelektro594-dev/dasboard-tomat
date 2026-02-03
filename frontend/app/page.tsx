@@ -34,7 +34,7 @@ const warnaBadge = (warna: string) => {
     case "hijau":
       return "bg-green-100 text-green-700";
     default:
-      return "bg-gray-200 text-gray-800";
+      return "bg-black-200 text-black-800";
   }
 };
 
@@ -47,7 +47,7 @@ const kategoriBadge = (kategori: string) => {
     case "besar":
       return "bg-green-100 text-green-700";
     default:
-      return "bg-gray-200 text-gray-800";
+      return "bg-black-200 text-black-800";
   }
 };
 
@@ -83,7 +83,7 @@ export default function Home() {
   }, []);
 
   if (!data) {
-    return <p className="p-6 text-gray-900">Loading data...</p>;
+    return <p className="p-6 text-black-900">Loading data...</p>;
   }
 
   /* ================== DATA GRAFIK ================== */
@@ -96,15 +96,15 @@ export default function Home() {
     }));
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6 text-gray-900">
+    <div className="min-h-screen bg-black-100 p-6 text-black-900">
       <div className="max-w-7xl mx-auto space-y-8">
 
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">
+          <h1 className="text-3xl font-bold text-black-900">
             Dashboard Monitoring Tomat
           </h1>
-          <p className="text-gray-700 md:text-gray-600">
+          <p className="text-black-700 md:text-black-600">
             Sistem sortir tomat berbasis Arduino UNO dan ESP32 Dev Module
           </p>
         </div>
@@ -112,7 +112,7 @@ export default function Home() {
         {/* Card Ringkas */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-white p-6 rounded-2xl shadow-sm border">
-            <p className="text-sm text-gray-700 mb-2">Status Sistem</p>
+            <p className="text-sm text-black-700 mb-2">Status Sistem</p>
             <span
               className={`px-4 py-1 rounded-full text-sm font-semibold ${
                 online
@@ -125,7 +125,7 @@ export default function Home() {
           </div>
 
           <div className="bg-white p-6 rounded-2xl shadow-sm border">
-            <p className="text-sm text-gray-700 mb-2">Warna Tomat</p>
+            <p className="text-sm text-black-700 mb-2">Warna Tomat</p>
             <span
               className={`px-4 py-1 rounded-full text-sm font-semibold ${warnaBadge(
                 data.warna
@@ -136,7 +136,7 @@ export default function Home() {
           </div>
 
           <div className="bg-white p-6 rounded-2xl shadow-sm border">
-            <p className="text-sm text-gray-700 mb-2">Berat Tomat</p>
+            <p className="text-sm text-black-700 mb-2">Berat Tomat</p>
             <p className="text-lg font-semibold">{data.berat} gram</p>
           </div>
         </div>
@@ -149,17 +149,17 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <p className="text-sm text-gray-700">Warna</p>
+              <p className="text-sm text-black-700">Warna</p>
               <p className="font-semibold">{data.warna}</p>
             </div>
 
             <div>
-              <p className="text-sm text-gray-700">Berat</p>
+              <p className="text-sm text-black-700">Berat</p>
               <p className="font-semibold">{data.berat} gram</p>
             </div>
 
             <div>
-              <p className="text-sm text-gray-700">Kategori</p>
+              <p className="text-sm text-black-700">Kategori</p>
               <span
                 className={`px-4 py-1 rounded-full text-sm font-semibold ${kategoriBadge(
                   data.kategori
@@ -178,7 +178,7 @@ export default function Home() {
           </h2>
 
           <table className="w-full text-sm border">
-            <thead className="bg-gray-100 border-b">
+            <thead className="bg-black-100 border-b">
               <tr>
                 <th className="p-2 text-left">Warna</th>
                 <th className="p-2 text-left">Berat (g)</th>
@@ -199,7 +199,7 @@ export default function Home() {
                     {data.kategori}
                   </span>
                 </td>
-                <td className="p-2 text-gray-700">{data.waktu}</td>
+                <td className="p-2 text-black-700">{data.waktu}</td>
               </tr>
             </tbody>
           </table>
