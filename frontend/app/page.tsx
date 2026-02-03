@@ -24,7 +24,7 @@ type RiwayatData = TomatData & {
   id: number;
 };
 
-/* ================== BADGE ================== */
+/* ================== BADGE HELPER ================== */
 const warnaBadge = (warna: string) => {
   switch (warna.toLowerCase()) {
     case "merah":
@@ -57,29 +57,32 @@ export default function Home() {
   const [online, setOnline] = useState(false);
   const [riwayat, setRiwayat] = useState<RiwayatData[]>([]);
 
-  /* ===== DUMMY DATA UNTUK ONLINE DEMO ===== */
+  /* ================== DUMMY DATA (UNTUK DEMO ONLINE) ================== */
   useEffect(() => {
     const dummy: TomatData = {
       status: "ONLINE",
       warna: "Merah",
       berat: 150,
       kategori: "Besar",
-      waktu: new Date().toLocaleTimeString(),
+      waktu: new Date().toISOString(),
     };
 
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       setData(dummy);
       setOnline(true);
       setRiwayat([{ id: Date.now(), ...dummy }]);
     }, 1000);
+
+    return () => clearTimeout(timer);
   }, []);
 
   if (!data) {
-    return <p className="p-6">Loading data...</p>;
+    return <p className="p-6 text-gray-600">Loading data...</p>;
   }
 
+  /* ================== DATA GRAFIK ================== */
   const grafikData = riwayat.map((item) => ({
-    waktu: item.waktu,
+    waktu: new Date(item.waktu).toLocaleTimeString(),
     berat: item.berat,
   }));
 
@@ -87,68 +90,128 @@ export default function Home() {
     <div className="min-h-screen bg-gray-100 p-6">
       <div className="max-w-7xl mx-auto space-y-8">
 
-        <h1 className="text-3xl font-bold">
-          Dashboard Monitoring Tomat
-        </h1>
+        {/* Header */}
+        <div>
+          <h1 className="text-3xl font-bold text-gray-800">
+            Dashboard Monitoring Tomat
+          </h1>
+          <p className="text-gray-500">
+            Sistem sortir tomat berbasis Arduino UNO dan ESP32
+          </p>
+        </div>
 
-        {/* CARD */}
+        {/* Card Ringkas */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white p-6 rounded-2xl border">
-            <p>Status</p>
-            <span className="text-green-700 font-semibold">ONLINE</span>
+          <div className="bg-white p-6 rounded-2xl shadow-sm border">
+            <p className="text-sm text-gray-500 mb-2">Status Sistem</p>
+            <span
+              className={`px-4 py-1 rounded-full text-sm font-semibold ${
+                online
+                  ? "bg-green-100 text-green-700"
+                  : "bg-red-100 text-red-700"
+              }`}
+            >
+              {online ? "ONLINE" : "OFFLINE"}
+            </span>
           </div>
 
-          <div className="bg-white p-6 rounded-2xl border">
-            <p>Warna</p>
-            <span className={warnaBadge(data.warna)}>
+          <div className="bg-white p-6 rounded-2xl shadow-sm border">
+            <p className="text-sm text-gray-500 mb-2">Warna Tomat</p>
+            <span
+              className={`px-4 py-1 rounded-full text-sm font-semibold ${warnaBadge(
+                data.warna
+              )}`}
+            >
               {data.warna}
             </span>
           </div>
 
-          <div className="bg-white p-6 rounded-2xl border">
-            <p>Berat</p>
-            <p className="font-semibold">{data.berat} gram</p>
+          <div className="bg-white p-6 rounded-2xl shadow-sm border">
+            <p className="text-sm text-gray-500 mb-2">Berat Tomat</p>
+            <p className="text-lg font-semibold">{data.berat} gram</p>
           </div>
         </div>
 
-        {/* FUZZY */}
-        <div className="bg-white p-6 rounded-2xl border">
-          <h2 className="font-semibold mb-4">Hasil Klasifikasi Fuzzy</h2>
+        {/* Hasil Klasifikasi Fuzzy */}
+        <div className="bg-white p-6 rounded-2xl shadow-sm border">
+          <h2 className="text-lg font-semibold mb-4">
+            Hasil Klasifikasi Fuzzy
+          </h2>
 
-          <div className="grid grid-cols-3 gap-4">
-            <div>{data.warna}</div>
-            <div>{data.berat} g</div>
-            <div className={kategoriBadge(data.kategori)}>
-              {data.kategori}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <p className="text-sm text-gray-500">Warna</p>
+              <p className="font-semibold">{data.warna}</p>
+            </div>
+
+            <div>
+              <p className="text-sm text-gray-500">Berat</p>
+              <p className="font-semibold">{data.berat} gram</p>
+            </div>
+
+            <div>
+              <p className="text-sm text-gray-500">Kategori</p>
+              <span
+                className={`px-4 py-1 rounded-full text-sm font-semibold ${kategoriBadge(
+                  data.kategori
+                )}`}
+              >
+                {data.kategori}
+              </span>
             </div>
           </div>
         </div>
 
-        {/* GRAFIK */}
-        <div className="bg-white p-6 rounded-2xl border h-64">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={grafikData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="waktu" />
-              <YAxis />
-              <Tooltip />
-              <Line dataKey="berat" stroke="#16a34a" />
-            </LineChart>
-          </ResponsiveContainer>
+        {/* Grafik */}
+        <div className="bg-white p-6 rounded-2xl shadow-sm border">
+          <h2 className="text-lg font-semibold mb-4">
+            Grafik Berat Tomat
+          </h2>
+
+          <div className="w-full h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={grafikData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="waktu" />
+                <YAxis />
+                <Tooltip />
+                <Line
+                  type="monotone"
+                  dataKey="berat"
+                  stroke="#16a34a"
+                  strokeWidth={2}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
         </div>
 
-        {/* RIWAYAT */}
-        <div className="bg-white p-6 rounded-2xl border">
-          <h2 className="font-semibold mb-4">Riwayat Sortir</h2>
-          <table className="w-full">
+        {/* Riwayat */}
+        <div className="bg-white p-6 rounded-2xl shadow-sm border">
+          <h2 className="text-lg font-semibold mb-4">
+            Riwayat Sortir Tomat
+          </h2>
+
+          <table className="w-full text-sm border">
+            <thead className="bg-gray-50 border-b">
+              <tr>
+                <th className="p-2">No</th>
+                <th className="p-2">Warna</th>
+                <th className="p-2">Berat</th>
+                <th className="p-2">Kategori</th>
+                <th className="p-2">Waktu</th>
+              </tr>
+            </thead>
             <tbody>
-              {riwayat.map((r, i) => (
-                <tr key={r.id}>
-                  <td>{i + 1}</td>
-                  <td>{r.warna}</td>
-                  <td>{r.berat}</td>
-                  <td>{r.kategori}</td>
-                  <td>{r.waktu}</td>
+              {riwayat.map((item, i) => (
+                <tr key={item.id} className="border-b">
+                  <td className="p-2">{i + 1}</td>
+                  <td className="p-2">{item.warna}</td>
+                  <td className="p-2">{item.berat}</td>
+                  <td className="p-2">{item.kategori}</td>
+                  <td className="p-2 text-gray-500">
+                    {new Date(item.waktu).toLocaleTimeString()}
+                  </td>
                 </tr>
               ))}
             </tbody>
