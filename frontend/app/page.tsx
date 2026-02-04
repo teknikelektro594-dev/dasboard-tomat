@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image"; // ⬅️ TAMBAHAN
 import {
   LineChart,
   Line,
@@ -62,13 +63,9 @@ export default function Home() {
     const interval = setInterval(() => {
       const dummy: TomatData = {
         status: "ONLINE",
-        warna: ["Merah", "Kuning", "Hijau"][
-          Math.floor(Math.random() * 3)
-        ],
+        warna: ["Merah", "Kuning", "Hijau"][Math.floor(Math.random() * 3)],
         berat: Math.floor(Math.random() * 80) + 120,
-        kategori: ["Kecil", "Sedang", "Besar"][
-          Math.floor(Math.random() * 3)
-        ],
+        kategori: ["Kecil", "Sedang", "Besar"][Math.floor(Math.random() * 3)],
         waktu: new Date().toLocaleTimeString(),
       };
 
@@ -86,7 +83,6 @@ export default function Home() {
     return <p className="p-6 text-black-900">Loading data...</p>;
   }
 
-  /* ================== DATA GRAFIK ================== */
   const grafikData = riwayat
     .slice()
     .reverse()
@@ -107,6 +103,51 @@ export default function Home() {
           <p className="text-black-700 md:text-black-600">
             Sistem sortir tomat berbasis Arduino UNO dan ESP32 Dev Module
           </p>
+        </div>
+
+        {/* 🔽 PEMBUAT ALAT (TAMBAHAN SAJA) */}
+        <div className="bg-white p-6 rounded-2xl shadow-sm border">
+          <h2 className="text-lg font-semibold mb-6 text-center">
+            Pembuat Alat
+          </h2>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div className="flex flex-col items-center text-center">
+              <Image
+                src="/tim/kholas.jpg"
+                alt="Pembuat 1"
+                width={120}
+                height={120}
+                className="rounded-full shadow mb-3"
+              />
+              <p className="font-semibold">Nama Orang 1</p>
+              <p className="text-sm text-black-600">Hardware & Sensor</p>
+            </div>
+
+            <div className="flex flex-col items-center text-center">
+              <Image
+                src="/tim/aku.jpg"
+                alt="Pembuat 2"
+                width={120}
+                height={120}
+                className="rounded-full shadow mb-3"
+              />
+              <p className="font-semibold">Nama Orang 2</p>
+              <p className="text-sm text-black-600">Fuzzy Logic</p>
+            </div>
+
+            <div className="flex flex-col items-center text-center">
+              <Image
+                src="/tim/samsul.jpg"
+                alt="Pembuat 3"
+                width={120}
+                height={120}
+                className="rounded-full shadow mb-3"
+              />
+              <p className="font-semibold">Nama Orang 3</p>
+              <p className="text-sm text-black-600">Web & IoT</p>
+            </div>
+          </div>
         </div>
 
         {/* Card Ringkas */}
