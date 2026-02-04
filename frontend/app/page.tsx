@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image"; // ⬅️ TAMBAHAN
+import Image from "next/image";
 import {
   LineChart,
   Line,
@@ -12,6 +12,10 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
+/* ================== API ================== */
+const API_URL =
+  "https://script.google.com/macros/s/AKfycbx_KU0nXefVbGW2N9EaDgn1xqJLFZ4687ywLbEFUbnwKQNazs2p2L2slTz78Lv-CoM/exec";
+
 /* ================== TYPE ================== */
 type TomatData = {
   status: string;
@@ -21,8 +25,12 @@ type TomatData = {
   waktu: string;
 };
 
-type RiwayatData = TomatData & {
+type RiwayatData = {
   id: number;
+  warna: string;
+  berat: number;
+  kategori: string;
+  waktu: string;
 };
 
 /* ================== BADGE HELPER ================== */
@@ -35,7 +43,7 @@ const warnaBadge = (warna: string) => {
     case "hijau":
       return "bg-green-100 text-green-700";
     default:
-      return "bg-black-200 text-black-800";
+      return "bg-gray-200 text-gray-800";
   }
 };
 
@@ -48,7 +56,7 @@ const kategoriBadge = (kategori: string) => {
     case "besar":
       return "bg-green-100 text-green-700";
     default:
-      return "bg-black-200 text-black-800";
+      return "bg-gray-200 text-gray-800";
   }
 };
 
@@ -58,29 +66,70 @@ export default function Home() {
   const [online, setOnline] = useState(false);
   const [riwayat, setRiwayat] = useState<RiwayatData[]>([]);
 
-  /* ================== DUMMY DATA REALTIME ================== */
+  /* ================== DATA DARI SPREADSHEET ================== */
   useEffect(() => {
-    const interval = setInterval(() => {
-      const dummy: TomatData = {
-        status: "ONLINE",
-        warna: ["Merah", "Kuning", "Hijau"][Math.floor(Math.random() * 3)],
-        berat: Math.floor(Math.random() * 80) + 120,
-        kategori: ["Kecil", "Sedang", "Besar"][Math.floor(Math.random() * 3)],
-        waktu: new Date().toLocaleTimeString(),
-      };
+    const fetchData = async () => {
+      try {
+        const res = await fetch(API_URL);
+        const rawData: any[] = await res.json();
 
-      setData(dummy);
-      setOnline(true);
-      setRiwayat((prev) =>
-        [{ id: Date.now(), ...dummy }, ...prev].slice(0, 10)
-      );
-    }, 3000);
+        const cleanData = rawData.filter(
+          (item) => item.warna && item.berat
+        );
 
+        if (cleanData.length === 0) {
+          setOnline(false);
+          return;
+        }
+
+        const latest = cleanData[cleanData.length - 1];
+
+        const formatted: TomatData = {
+          status: "ONLINE",
+          warna: latest.warna,
+          berat: Number(latest.berat),
+          kategori:
+            latest.berat < 200
+              ? "Kecil"
+              : latest.berat < 400
+              ? "Sedang"
+              : "Besar",
+          waktu: new Date(latest.waktu).toLocaleTimeString(),
+        };
+
+        setData(formatted);
+        setOnline(true);
+
+        setRiwayat(
+          cleanData
+            .slice(-10)
+            .reverse()
+            .map((item, i) => ({
+              id: i + 1,
+              warna: item.warna,
+              berat: Number(item.berat),
+              kategori:
+                item.berat < 200
+                  ? "Kecil"
+                  : item.berat < 400
+                  ? "Sedang"
+                  : "Besar",
+              waktu: new Date(item.waktu).toLocaleTimeString(),
+            }))
+        );
+      } catch (error) {
+        console.error("Gagal ambil data:", error);
+        setOnline(false);
+      }
+    };
+
+    fetchData();
+    const interval = setInterval(fetchData, 5000);
     return () => clearInterval(interval);
   }, []);
 
   if (!data) {
-    return <p className="p-6 text-black-900">Loading data...</p>;
+    return <p className="p-6 text-gray-900">Selamat datang di website SoBuTo. Alat ini dibuat dari rangkaian, kode program, kopi, dan sedikit overthinking 😎</p>;
   }
 
   const grafikData = riwayat
@@ -92,68 +141,63 @@ export default function Home() {
     }));
 
   return (
-    <div className="min-h-screen bg-black-100 p-6 text-black-900">
+    <div className="min-h-screen bg-gray-100 p-6 text-gray-900">
       <div className="max-w-7xl mx-auto space-y-8">
 
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-bold text-black-900">
-            Dashboard Monitoring Tomat
-          </h1>
-          <p className="text-black-700 md:text-black-600">
-            Sistem sortir tomat berbasis Arduino UNO dan ESP32 Dev Module
+          <h1 className="text-3xl font-bold">Dashboard Monitoring Tomat</h1>
+          <p className="text-gray-600">
+            Sistem sortir tomat berbasis Arduino UNO & ESP32
           </p>
         </div>
 
-        {/* 🔽 PEMBUAT ALAT (TAMBAHAN SAJA) */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border">
+        {/* Pembuat Alat */}
+        <div className="bg-white p-6 rounded-2xl shadow border">
           <h2 className="text-lg font-semibold mb-6 text-center">
             Pembuat Alat
           </h2>
-
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            <div className="flex flex-col items-center text-center">
+            <div className="flex flex-col items-center">
               <Image
                 src="/kholas.jpg"
-                alt="Pembuat 1"
+                alt="Kholis"
                 width={130}
                 height={130}
-                className="rounded-full shadow mb-3"
+                className="rounded-full mb-3"
               />
               <p className="font-semibold">Kholis</p>
-              <p className="text-sm text-black-600">Hardware & Sensor</p>
+              <p className="text-sm text-gray-600">Hardware & Sensor</p>
             </div>
-
-            <div className="flex flex-col items-center text-center">
+            <div className="flex flex-col items-center">
               <Image
                 src="/samsul.jpg"
-                alt="Pembuat 2"
+                alt="Samsul"
                 width={130}
                 height={130}
-                className="rounded-full shadow mb-3"
+                className="rounded-full mb-3"
               />
               <p className="font-semibold">Samsul</p>
-              <p className="text-sm text-black-600">Fuzzy Logic</p>
+              <p className="text-sm text-gray-600">Fuzzy Logic</p>
             </div>
-
-            <div className="flex flex-col items-center text-center">
+            <div className="flex flex-col items-center">
               <Image
                 src="/aku.jpg"
-                alt="Pembuat 3"
+                alt="Deden"
                 width={130}
                 height={130}
-                className="rounded-full shadow mb-3"
+                className="rounded-full mb-3"
               />
               <p className="font-semibold">Deden</p>
-              <p className="text-sm text-black-600">Web & IoT</p>
+              <p className="text-sm text-gray-600">Web & IoT</p>
             </div>
           </div>
         </div>
 
         {/* Card Ringkas */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white p-6 rounded-2xl shadow-sm border">
-            <p className="text-sm text-black-700 mb-2">Status Sistem</p>
+          <div className="bg-white p-6 rounded-2xl shadow border">
+            <p className="text-sm text-gray-600 mb-2">Status Sistem</p>
             <span
               className={`px-4 py-1 rounded-full text-sm font-semibold ${
                 online
@@ -164,9 +208,8 @@ export default function Home() {
               {online ? "ONLINE" : "OFFLINE"}
             </span>
           </div>
-
-          <div className="bg-white p-6 rounded-2xl shadow-sm border">
-            <p className="text-sm text-black-700 mb-2">Warna Tomat</p>
+          <div className="bg-white p-6 rounded-2xl shadow border">
+            <p className="text-sm text-gray-600 mb-2">Warna Tomat</p>
             <span
               className={`px-4 py-1 rounded-full text-sm font-semibold ${warnaBadge(
                 data.warna
@@ -175,32 +218,26 @@ export default function Home() {
               {data.warna}
             </span>
           </div>
-
-          <div className="bg-white p-6 rounded-2xl shadow-sm border">
-            <p className="text-sm text-black-700 mb-2">Berat Tomat</p>
+          <div className="bg-white p-6 rounded-2xl shadow border">
+            <p className="text-sm text-gray-600 mb-2">Berat Tomat</p>
             <p className="text-lg font-semibold">{data.berat} gram</p>
           </div>
         </div>
 
-        {/* Hasil Klasifikasi Fuzzy */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border">
-          <h2 className="text-lg font-semibold mb-4">
-            Hasil Klasifikasi Fuzzy
-          </h2>
-
+        {/* 🔹 Hasil Klasifikasi Fuzzy */}
+        <div className="bg-white p-6 rounded-2xl shadow border">
+          <h2 className="text-lg font-semibold mb-4">Hasil Klasifikasi Fuzzy</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <p className="text-sm text-black-700">Warna</p>
+              <p className="text-sm text-gray-700">Warna</p>
               <p className="font-semibold">{data.warna}</p>
             </div>
-
             <div>
-              <p className="text-sm text-black-700">Berat</p>
+              <p className="text-sm text-gray-700">Berat</p>
               <p className="font-semibold">{data.berat} gram</p>
             </div>
-
             <div>
-              <p className="text-sm text-black-700">Kategori</p>
+              <p className="text-sm text-gray-700">Kategori</p>
               <span
                 className={`px-4 py-1 rounded-full text-sm font-semibold ${kategoriBadge(
                   data.kategori
@@ -212,46 +249,11 @@ export default function Home() {
           </div>
         </div>
 
-        {/* TABEL HASIL KLASIFIKASI FUZZY */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border">
-          <h2 className="text-lg font-semibold mb-4">
-            Tabel Hasil Klasifikasi Fuzzy
-          </h2>
-
-          <table className="w-full text-sm border">
-            <thead className="bg-black-100 border-b">
-              <tr>
-                <th className="p-2 text-left">Warna</th>
-                <th className="p-2 text-left">Berat (g)</th>
-                <th className="p-2 text-left">Kategori</th>
-                <th className="p-2 text-left">Waktu</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="border-b">
-                <td className="p-2">{data.warna}</td>
-                <td className="p-2">{data.berat}</td>
-                <td className="p-2">
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-semibold ${kategoriBadge(
-                      data.kategori
-                    )}`}
-                  >
-                    {data.kategori}
-                  </span>
-                </td>
-                <td className="p-2 text-black-700">{data.waktu}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
         {/* Grafik */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border">
+        <div className="bg-white p-6 rounded-2xl shadow border">
           <h2 className="text-lg font-semibold mb-4">
             Grafik Berat Tomat Realtime
           </h2>
-
           <div className="w-full h-64">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={grafikData}>
@@ -262,7 +264,7 @@ export default function Home() {
                 <Line
                   type="monotone"
                   dataKey="berat"
-                  stroke="#16a34a"
+                  stroke="#f30b0b"
                   strokeWidth={2}
                 />
               </LineChart>
@@ -270,56 +272,48 @@ export default function Home() {
           </div>
         </div>
 
-{/* RIWAYAT SORTIR TOMAT */}
-<div className="bg-white p-6 rounded-2xl shadow-sm border">
-  <h2 className="text-lg font-semibold mb-4 text-gray-900">
-    Riwayat Sortir Tomat
-  </h2>
-
-  {riwayat.length === 0 ? (
-    <p className="text-gray-500">Belum ada data sortir</p>
-  ) : (
-    <table className="w-full text-sm border text-gray-900">
-      <thead className="bg-gray-100 border-b">
-        <tr>
-          <th className="p-2 text-left">No</th>
-          <th className="p-2 text-left">Warna</th>
-          <th className="p-2 text-left">Berat (g)</th>
-          <th className="p-2 text-left">Kategori</th>
-          <th className="p-2 text-left">Waktu</th>
-        </tr>
-      </thead>
-      <tbody>
-        {riwayat.map((item, index) => (
-          <tr key={item.id} className="border-b">
-            <td className="p-2">{index + 1}</td>
-            <td className="p-2">
-              <span
-                className={`px-3 py-1 rounded-full text-xs font-semibold ${warnaBadge(
-                  item.warna
-                )}`}
-              >
-                {item.warna}
-              </span>
-            </td>
-            <td className="p-2">{item.berat}</td>
-            <td className="p-2">
-              <span
-                className={`px-3 py-1 rounded-full text-xs font-semibold ${kategoriBadge(
-                  item.kategori
-                )}`}
-              >
-                {item.kategori}
-              </span>
-            </td>
-            <td className="p-2 text-gray-700">{item.waktu}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  )}
-</div>
-
+        {/* Riwayat */}
+        <div className="bg-white p-6 rounded-2xl shadow border">
+          <h2 className="text-lg font-semibold mb-4">Riwayat Sortir Tomat</h2>
+          <table className="w-full text-sm border">
+            <thead className="bg-gray-100 border-b">
+              <tr>
+                <th className="p-2">No</th>
+                <th className="p-2">Warna</th>
+                <th className="p-2">Berat (g)</th>
+                <th className="p-2">Kategori</th>
+                <th className="p-2">Waktu</th>
+              </tr>
+            </thead>
+            <tbody>
+              {riwayat.map((item, i) => (
+                <tr key={item.id} className="border-b">
+                  <td className="p-2">{i + 1}</td>
+                  <td className="p-2">
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-semibold ${warnaBadge(
+                        item.warna
+                      )}`}
+                    >
+                      {item.warna}
+                    </span>
+                  </td>
+                  <td className="p-2">{item.berat}</td>
+                  <td className="p-2">
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-semibold ${kategoriBadge(
+                        item.kategori
+                      )}`}
+                    >
+                      {item.kategori}
+                    </span>
+                  </td>
+                  <td className="p-2 text-gray-600">{item.waktu}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
       </div>
     </div>
