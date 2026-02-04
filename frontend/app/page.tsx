@@ -116,11 +116,11 @@ export default function Home() {
               <Image
                 src="/kholas.jpg"
                 alt="Pembuat 1"
-                width={120}
-                height={120}
+                width={130}
+                height={130}
                 className="rounded-full shadow mb-3"
               />
-              <p className="font-semibold">Nama Orang 1</p>
+              <p className="font-semibold">Kholis</p>
               <p className="text-sm text-black-600">Hardware & Sensor</p>
             </div>
 
@@ -128,11 +128,11 @@ export default function Home() {
               <Image
                 src="/samsul.jpg"
                 alt="Pembuat 2"
-                width={120}
-                height={120}
+                width={130}
+                height={130}
                 className="rounded-full shadow mb-3"
               />
-              <p className="font-semibold">Nama Orang 2</p>
+              <p className="font-semibold">Samsul</p>
               <p className="text-sm text-black-600">Fuzzy Logic</p>
             </div>
 
@@ -140,11 +140,11 @@ export default function Home() {
               <Image
                 src="/aku.jpg"
                 alt="Pembuat 3"
-                width={120}
-                height={120}
+                width={130}
+                height={130}
                 className="rounded-full shadow mb-3"
               />
-              <p className="font-semibold">Nama Orang 3</p>
+              <p className="font-semibold">Deden</p>
               <p className="text-sm text-black-600">Web & IoT</p>
             </div>
           </div>
