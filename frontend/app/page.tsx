@@ -129,7 +129,7 @@ export default function Home() {
   }, []);
 
   if (!data) {
-    return <p className="p-6 text-gray-900">Selamat datang di website SoBuTo. Alat ini dibuat dari rangkaian, kode program, kopi, dan sedikit overthinking 😎</p>;
+    return <p className="p-6 text-gray-900">Selamat datang di website SoBuTo. Alat ini dibuat dari rangkaian, kode program, kopi, dan sedikit overthinking 😉</p>;
   }
 
   const grafikData = riwayat
@@ -146,7 +146,7 @@ export default function Home() {
 
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-bold">Dashboard Monitoring Tomat</h1>
+          <h1 className="text-3xl font-bold">Dashboard Monitoring Tomat 🍅</h1>
           <p className="text-gray-600">
             Sistem sortir tomat berbasis Arduino UNO & ESP32
           </p>
